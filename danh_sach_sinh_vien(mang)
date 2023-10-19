@@ -1,0 +1,376 @@
+
+/*
+Nguyen Thang Minh Dat 22697101
+Pham Van Nguyen 22695121
+Thinh Vinh Phat 22697421
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<String.h>
+#include<ctype.h>
+#include<stdbool.h>
+
+const int MAX=50;
+
+//Tao cau truc sinh vien
+struct SINHVIEN{
+	char ten[100];
+	char mssv[10];
+	float tk_score;
+	float gk_score;
+	float ck_score;
+	float th_score;
+	float avg_score;
+	char notice[100];
+	char letter[2];
+};
+typedef struct SINHVIEN SINHVIEN;
+
+
+void nhapSV(SINHVIEN *x);
+void rank(SINHVIEN *x);
+void xuatSV(SINHVIEN x);
+void duyet(SINHVIEN arr[], int n);
+void themSV(SINHVIEN arr[],int *n);
+int find(SINHVIEN arr[], char maso[], int n,SINHVIEN *x);
+int pos(SINHVIEN arr[], char maso[],int n);
+int xoaSV(SINHVIEN arr[],char maso[], int *n);
+void sort(SINHVIEN arr[], int n);
+void maxAVG(SINHVIEN arr[], int n);
+void modify(SINHVIEN arr[], SINHVIEN x, int n);
+
+int main(){
+	
+	int n=0;
+	SINHVIEN arr[MAX];
+	int choice, k;
+	
+	do{
+		printf("\n1.Them sinh vien\n");
+		printf("2.Hien thi sinh vien\n");
+		printf("3.Tim sinh vien theo ma so\n");
+		printf("4.Xoa sinh vien the ma so\n");
+		printf("5.Sap xep sinh vien theo AVG tang dan\n");
+		printf("6.Tim sinh vien co diem trung binh cao nhat\n");
+		printf("7.Chinh sua thong tin sinh vien\n");
+		printf("0.Thoat\n");
+		printf("Nhap lua chon:");
+		scanf("%d",&choice); getchar();
+		switch(choice){
+			case 1:
+				if(n==MAX){
+					printf("\nDanh sach sinh vien da du\n");
+				}
+				else{
+					themSV(arr,&n);
+					printf("Them sinh vien thanh cong\n");
+				}
+				break;
+			case 2:
+				if(n==0){
+					printf("Danh sach sinh vien rong\n");
+				}
+				else{
+					duyet(arr,n);
+				}
+				break;
+			case 3:
+				if(n==0){
+					printf("Danh sach sinh vien rong\n");
+				}		
+				else{
+					SINHVIEN sv;
+					char maso[10];
+					printf("Nhap ma so sinh vien can tim:");
+					gets(maso);
+					if(find(arr,maso,n,&sv)!=-1){
+						xuatSV(sv);
+					}
+					else{
+						printf("Khong tim thay sinh vien\n");
+					}
+				}
+				break;
+			case 4:
+				if(n==0){
+					printf("Danh sach sinh vien rong\n");
+				}	
+				else{
+					char maso1[10];
+					printf("Nhap ma so sinh vien can xoa:");
+					gets(maso1);
+					if(xoaSV(arr,maso1,&n)!=-1){
+						printf("Xoa sinh vien thanh cong\n");
+					}
+					else{
+						printf("Xoa sinh vien that bai\n");
+					}
+				}
+				break;
+			case 5:
+				if(n==0){
+					printf("Danh sach sinh vien rong\n");
+				}	
+				else{
+					sort(arr,n);
+					printf("Sap xep sinh vien thanh cong\n");
+				}
+				break;
+			case 6:
+				if(n==0){
+					printf("Danh sach sinh vien rong\n");
+				}	
+				else{
+					maxAVG(arr,n);
+				}
+				break;
+			case 7:{
+				char ma[10];
+				printf("Nhap ma so sinh vien de sua thong tin:");
+				gets(ma);
+				SINHVIEN Y;
+				if(find(arr,ma,n,&Y)!=-1){
+					modify(arr,Y,n);
+				}
+				else{
+					printf("Khong tim thay sinh vien\n");
+				}
+				break;
+			}	
+		}
+	}while(choice!=0);
+}
+
+//Tao sinh vien
+void nhapSV(SINHVIEN *x){
+	printf("Nhap ho ten sinh vien:"); gets(x->ten);
+	printf("Nhap ma so sinh vien:"); gets(x->mssv);
+	printf("Nhap diem thuong ki:"); scanf("%f",&x->tk_score); getchar();
+	printf("Nhap diem giua ki:"); scanf("%f",&x->gk_score); getchar();
+	printf("Nhap diem cuoi ki:"); scanf("%f",&x->ck_score); getchar();
+	printf("Nhap diem thuc hanh:");scanf("%f",&x->th_score); getchar();
+	x->avg_score=(((2*(x->tk_score)+3*(x->gk_score)+5*(x->ck_score))/10)*2+(x->th_score))/3;
+}
+
+//Diem theo chu cai
+void rank(SINHVIEN *x){
+	if(x->avg_score>=9){
+		strcpy(x->letter,"A+");
+		strcpy(x->notice,"Xuat Sac");
+	}
+	else{
+		if(x->avg_score>=8.5){
+			strcpy(x->letter,"A");
+			strcpy(x->notice,"Gioi");
+		}
+		else{
+			if(x->avg_score>=8){
+				strcpy(x->letter,"B+");
+				strcpy(x->notice,"Kha");
+			}
+			else{
+				if(x->avg_score>=7){
+					strcpy(x->letter,"B");
+					strcpy(x->notice,"Kha");
+				}
+				else{
+					if(x->avg_score>=6.5){
+						strcpy(x->letter,"C+");
+						strcpy(x->notice,"Trung Binh");
+					}
+					else{
+						if(x->avg_score>=5.5){
+							strcpy(x->letter,"C");
+							strcpy(x->notice,"Trung Binh");
+						}
+						else{
+							if(x->avg_score>=5){
+								strcpy(x->letter,"D+");
+								strcpy(x->notice,"Yeu");
+							}	
+							else{
+								if(x->avg_score>=4){
+									strcpy(x->letter,"D");
+									strcpy(x->notice,"Yeu");
+								}
+								else{
+									strcpy(x->letter,"F");
+									strcpy(x->notice,"Kem");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//Hien thi sinh vien
+void xuatSV(SINHVIEN x){
+	rank(&x);
+	printf("%-25s%-15s%-15.2f%-15.2f%-15.2f%-15.2f%-15.2f%-10s%-20s\n",
+	x.ten,x.mssv,x.tk_score,x.gk_score,x.ck_score,
+	x.th_score,x.avg_score,x.letter,x.notice);
+}
+
+//Duyet danh sach sinh vien
+void duyet(SINHVIEN arr[], int n){
+	printf("\n%-25s%-15s%-15s%-15s%-15s%-15s%-15s%-10s%-20s\n",
+	"Ho ten","MSSV","Thuong ki","Giua ki","Cuoi ki",
+	"Thuc hanh","Trung binh","Chu","Xep loai");
+	for(int i=0;i<n;i++){
+		xuatSV(arr[i]);
+	}
+} 
+
+//Them sinh vien vao danh sach
+void themSV(SINHVIEN arr[],int *n){
+	nhapSV(&arr[*n]);
+	(*n)++;
+}
+
+//Tim sinh vien bang ma so sinh vien
+int find(SINHVIEN arr[], char maso[], int n,SINHVIEN *x){
+	for(int i=0;i<n;i++){
+		if(strcmp(arr[i].mssv,maso)==0){
+			*x=arr[i];
+			return 1;
+		}
+	}
+	return -1;
+}
+
+//Tim vi tri sinh vien bang ma so sinh vien
+int pos(SINHVIEN arr[], char maso[],int n){
+	for(int i=0;i<n;i++){
+		if(strcmp(arr[i].mssv,maso)==0){
+			return i;
+		}
+	}
+	return -1;
+}
+
+//Xoa sinh vien bang ma so sinh vien
+int xoaSV(SINHVIEN arr[],char maso[], int *n){
+	int k=pos(arr,maso,*n);
+	if(k==-1){
+		return -1;
+	}
+	if(k==(*n-1)){
+		arr[k]=arr[-1];
+		(*n)--;
+		return 1;
+	}
+	for(int i=k;i<(*n-1);i++){
+		arr[i]=arr[i+1];
+	}
+	(*n)--;
+	return 1;
+}
+
+//Sap xep sinh vien co diem trung binh tang dan
+void sort(SINHVIEN arr[], int n){
+	for(int i=0;i<n-1;i++){
+		int min=i;
+		for(int j=i+1;j<n;j++){
+			if(arr[j].avg_score < arr[min].avg_score){
+				min=j;
+			}
+		}
+		SINHVIEN tmp=arr[i];
+		arr[i]=arr[min];
+		arr[min]=tmp;
+	}
+}
+
+//Tim sinh vien co diem trung binh cao nhat
+void maxAVG(SINHVIEN arr[], int n){
+	sort(arr,n);
+	xuatSV(arr[n-1]);
+}
+
+//Thay doi thong tin sinh vien
+void modify(SINHVIEN arr[], SINHVIEN x, int n){
+	int lc;
+	char ten[50];
+	float diem;
+	do{
+		printf("\n1.Sua ten sinh vien\n");
+		printf("2.Sua diem thuong ki sinh vien\n");
+		printf("3.Sua diem giua ki sinh vien\n");
+		printf("4.Sua diem cuoi ki sinh vien\n");
+		printf("5.Sua diem thuc hanh sinh vien\n");
+		printf("0.Thoat\n");
+		printf("Nhap lua chon:");
+		scanf("%d",&lc); getchar();
+		switch(lc){
+			case 1:{
+				printf("Nhap ten sinh vien:");
+				gets(ten);
+				for(int i=0;i<n;i++){
+					if(strcmp(arr[i].mssv,x.mssv)==0){
+						strcpy(arr[i].ten,ten);
+						break;
+					}
+				}
+				printf("Thay doi thong tin sinh vien thanh cong\n");
+				break;
+			}
+			case 2:{
+				printf("Nhap diem thuong ki:");
+				scanf("%f",&diem); getchar();
+				for(int i=0;i<n;i++){
+					if(strcmp(arr[i].mssv,x.mssv)==0){
+						arr[i].tk_score=diem;
+						arr[i].avg_score=(((2*(arr[i].tk_score)+3*(arr[i].gk_score)+5*(arr[i].ck_score))/10)*2+(arr[i].th_score))/3;
+						break;
+					}
+				}
+				printf("Thay doi thong tin sinh vien thanh cong\n");
+				break;
+			}
+			case 3:{
+				printf("Nhap diem giua ki:");
+				scanf("%f",&diem); getchar();
+				for(int i=0;i<n;i++){
+					if(strcmp(arr[i].mssv,x.mssv)==0){
+						arr[i].gk_score=diem;
+						arr[i].avg_score=(((2*(arr[i].tk_score)+3*(arr[i].gk_score)+5*(arr[i].ck_score))/10)*2+(arr[i].th_score))/3;
+						break;
+					}
+				}
+				printf("Thay doi thong tin sinh vien thanh cong\n");
+				break;
+			}
+			case 4:{
+				printf("Nhap diem cuoi ki:");
+				scanf("%f",&diem); getchar();
+				for(int i=0;i<n;i++){
+					if(strcmp(arr[i].mssv,x.mssv)==0){
+						arr[i].ck_score=diem;
+						arr[i].avg_score=(((2*(arr[i].tk_score)+3*(arr[i].gk_score)+5*(arr[i].ck_score))/10)*2+(arr[i].th_score))/3;
+						break;
+					}
+				}
+				printf("Thay doi thong tin sinh vien thanh cong\n");
+				break;
+			}
+			case 5:{
+				printf("Nhap diem thuc hanh:");
+				scanf("%f",&diem); getchar();
+				for(int i=0;i<n;i++){
+					if(strcmp(arr[i].mssv,x.mssv)==0){
+						arr[i].th_score=diem;
+						arr[i].avg_score=(((2*(arr[i].tk_score)+3*(arr[i].gk_score)+5*(arr[i].ck_score))/10)*2+(arr[i].th_score))/3;
+						break;
+					}
+				}
+				printf("Thay doi thong tin sinh vien thanh cong\n");
+				break;
+			}
+		}
+	}while(lc!=0);
+}
