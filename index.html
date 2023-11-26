@@ -3,37 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeatherApp</title>
+    <title>Images Searching</title>
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
     <div class="container">
-        <h1>Weather App</h1>
-        <form>
-            <input type="text" id="city-input"
-            placeholder="Enter City">
-            <input type="submit" value="Get Weather" id="city-submit">
-
+        <h1> Image Searching Website</h1>
+        <form >
+        <input type="text" id="search-input"
+        placeholder="Search for images...">
+    
+       <button id="Search-button">Search</button>
         </form>
 
-        <div id="weather-data">
-            <div class="icon">
-                <!-- <img src="http://openweathermap.org/img/wn/01d.png" alt="Weather Icon"> -->
-            </div>
+    <div class="search-results">
+        <!-- <div class="search-result">
+            <img src="https://ih0.redbubble.net/image.218566488.2648/flat,800x800,070,f.jpg" alt="Search Result">
 
-        <div class="tempature">
-        
+            <a href="https://www.redbubble.com/fr/i/impression-artistique/Question-Mark-Guy-Meme-Transparent-par-MemeCentral/21912648.1G4ZT" target="_blank" rel="noopener noreferrer">a question mark meme</a>
         </div>
 
-        <div class="description">
-          
+        <div class="search-result">
+            <img src="https://ih0.redbubble.net/image.218566488.2648/flat,800x800,070,f.jpg" alt="Search Result">
+            
+            <a href="https://www.redbubble.com/fr/i/impression-artistique/Question-Mark-Guy-Meme-Transparent-par-MemeCentral/21912648.1G4ZT" target="_blank" rel="noopener noreferrer">a question mark meme</a>
         </div>
 
-        <div class="details">
-       
-        </div>
+        <div class="search-result">
+            <img src="https://ih0.redbubble.net/image.218566488.2648/flat,800x800,070,f.jpg" alt="Search Result">
+            
+            <a href="https://www.redbubble.com/fr/i/impression-artistique/Question-Mark-Guy-Meme-Transparent-par-MemeCentral/21912648.1G4ZT" target="_blank" rel="noopener noreferrer">a question mark meme</a>
+        </div> -->
 
-        </div>
+    </div>
+     
+    
+        <input type="button" value="Show More" id="show-more-button">
+
+    <h1 id="error"></h1>
+
     </div>
     <script src="index.js"></script>
 </body>

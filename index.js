@@ -1,59 +1,96 @@
-const api_key = "dec91140770ce2fb80f7baa407ea3fab";
+const access_key = "MsAu1NveYIYITHLSHMaiihFctxrq7CupqNQ7BKp8i3c";
 
-const weather_data = document.getElementById("weather-data");
-const city_input = document.getElementById("city-input");
-const formEL = document.querySelector("form")
+const formEL = document.querySelector("form");
+const sreachInput = document.getElementById("search-input")
+const searchresultEL = document.querySelector(".search-results")
+const showmorebutton = document.getElementById("show-more-button");
+const errors = document.getElementById("error");
+let inputData ="";
+let page = 0;
 
-
-formEL.addEventListener("submit",(event) =>{
-    event.preventDefault()
-    const cityvaule = city_input.value;
-   getWeatherData(cityvaule);
-})
-
-function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-async function getWeatherData(cityvaule){
+async function SearchImages(){
     try {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityvaule}&appid=${api_key}&units=metric`)
+        inputData = sreachInput.value;
+    const url = `https://api.unsplash.com/search/photos?page=${page}&query=${inputData}&client_id=${access_key}`
+
+    
+    const respond = await fetch(url);
+
+    
+    const data = await respond.json();
+    
+    if(page == 1){
+        searchresultEL.innerHTML = "";
+    }
+    
+    // ket qua tim dc cua API
+    const result = data.results;
+    
+    if(result.length ==0){
+        throw new Error("NetWork respond was not working");
+    }
+
+    else{
+    //loc tung image co tron result
+    result.map((result)=>{
+
+        // tao bien de luu url cua anh , link cua anh
+        const imageWrapper = document.createElement("div");
+        imageWrapper.classList.add("search-result");
+        const image = document.createElement("img");
         
-        if(!response.ok){
-            throw new Error("NetWork respond was not working");
-        }
-        
-        const data = await response.json()
+        // gan url va alt cho image trong result
+        image.src = result.urls.small
+        image.alt = result.alt_description;
 
-        const temperature = Math.round(data.main.temp)
 
-        const  description = data.weather[0].description
+        // gan link image 
+        const imageLink = document.createElement("a");
+        imageLink.href = result.links.html
+        imageLink.target = "_blank";
+        imageLink.textContent = result.alt_description
 
-        const icon = data.weather[0].icon
+        // gan lai vao searchresult de tao lai ben html
+        imageWrapper.appendChild(image)
+        imageWrapper.appendChild(imageLink)
+        searchresultEL.appendChild(imageWrapper);
+    
+    })
 
-        const detail = [
-            `Feels like: ${Math.round(data.main.feels_like)}°C`,
-            `Humidity: ${data.main.humidity}%`,
-            `Wind speed: ${data.wind.speed}m/s`,
-        ]
+    page++;
 
-    weather_data.querySelector(".icon").innerHTML = ` <img src="http://openweathermap.org/img/wn/${icon}.png" alt="Weather Icon">
-    `;
+    if(page > 1 && page <1000){
+        showmorebutton.style.display = "block";
+    }
 
-    weather_data.querySelector(".tempature").textContent = `${temperature}°C`
+    errors.innerHTML = "";
+    }
 
-    weather_data.querySelector(".description").textContent = `${capitalizeFirstLetter(description)}`
-
-    weather_data.querySelector(".details").innerHTML = detail.map((detail) => ` <div>${detail}</div>` ).join("");
-
+    // khi API khong tim duoc loi
     } catch (error) {
-        weather_data.querySelector(".icon").innerHTML = ` <img src="https://ih0.redbubble.net/image.218566488.2648/flat,800x800,070,f.jpg" alt="Weather Icon">
-        `;
-    
-        weather_data.querySelector(".tempature").textContent = ``
-    
-        weather_data.querySelector(".description").textContent = `Cannot reconigze the City, Please try Again!!!`
-    
-        weather_data.querySelector(".details").innerHTML = ``;
+        const error_image = document.createElement("img");
+        const imageWrapper = document.createElement("div");
+
+        error_image.src = "https://ih0.redbubble.net/image.218566488.2648/flat,800x800,070,f.jpg";
+        error_image.alt = "Error";
+
+
+        imageWrapper.appendChild(error_image);
+        searchresultEL.appendChild(imageWrapper);
+
+        errors.innerHTML =  `Cannot Find the Image!!`;
+
+
     }
 }
+
+formEL.addEventListener("submit",(event) =>{
+    event.preventDefault();
+    page = 1;
+    SearchImages();
+})
+
+// khi nguoi dung an show more
+showmorebutton.addEventListener("click",() =>{
+    SearchImages();
+})
